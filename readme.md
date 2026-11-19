@@ -183,31 +183,31 @@ Jste v roli projektanta automatizačních systémů. Zákazník požaduje navrhn
 
 | Pozice | Typ modulu / komponenta                     | Přesné typové označení Teco           | Objednací číslo (Part No.) | Pokryté vstupy a výstupy (DI / DO / AI / PWM / relé) |
 | :----- | :------------------------------------------ | :------------------------------------ | :------------------------- | :--------------------------------------------------- |
-| **1**  | Spínaný napájecí zdroj 24 V DC na DIN lištu | `...` *(např. PS2-60/27)*             | `...`                      | Napájení centrály a senzorů 24 V DC                  |
-| **2**  | Centrální jednotka (CPU)                    | `...` *(např. CP-2007 nebo CP-2005)*  | `...`                      | `...`                                                |
-| **3**  | Rozšiřující modul 1 (sběrnice TCL2)         | `...` *(např. IB-1301)*               | `...`                      | `...`                                                |
-| **4**  | Rozšiřující modul 2 (sběrnice TCL2)         | `...` *(např. OS-1401)*               | `...`                      | `...`                                                |
-| **5**  | Případný další submodul / zakončení         | `...` *(např. zakončovací člen TCL2)* | `...`                      | `...`                                                |
+| **1**  | Spínaný napájecí zdroj 24 V DC na DIN lištu | `PS2-60/27 (napájecí zdroj 230 V AC / 27,2 V DC, 2,2 A)` *(např. PS2-60/27)*             | `TXN 070 40`                      | Napájení centrály a senzorů 24 V DC                  |
+| **2**  | Centrální jednotka (CPU)                    | `CP-2007 (základní modul Foxtrot 2)` *(např. CP-2007 nebo CP-2005)*  | `TXN 120 07.11NDNN (standardní varianta bez displeje/WiFi/LTE)`                      | `7× DI (z 14 univerzálních vstupů), 7× AI (5× 4–20 mA + 2× Pt100/Pt1000 ze zbylých univerzálních vstupů), 2× DO tranzistor (DO11, DO12), 11× DO relé (pokryje požadované 3× relé s rezervou)`                                                |
+| **3**  | Rozšiřující modul 1 (sběrnice TCL2)         | `IB-1301 (12× binární vstup 24 V AC/DC, GO)` *(např. IB-1301)*               | `TXN 113 01`                      | `12× DI (24 V DC)`                                                |
+| **4**  | Rozšiřující modul 2 (sběrnice TCL2)         | `IB-1301 (druhý modul 12× binární vstup 24 V AC/DC, GO)` *(např. OS-1401)*               | `TXN 113 01`                      | `12× DI (24 V DC) (celkem 7 + 12 + 12 = 31 DI)`                                                |
+| **5**  | Případný další submodul / zakončení         | `OS-1401 (12× DO 24 V DC, 8× 0,5 A, 4× 2 A, GO) + zakončovací odpor 120 Ω na konci linky TCL2` *(např. zakončovací člen TCL2)* | `TXN 114 01 (modul OS-1401)`                      | `12× DO 24 V DC (pokryje 4× rychlý/PWM výstup + 2× standardní DO 24 V DC s rezervou na dalších 6 DO)`                                                |
 
 2. **Vyhodnocení I/O bilance a projektové rezervy:**
    - Doplňte počty a vypočítejte výslednou rezervu pro budoucí rozšíření linky:
 
 | Typ signálu | Požadavek linky | Celková kapacita navržené sestavy Teco | Rezerva (počet volných svorek) | Výsledná rezerva v % |
 | :--- | :--- | :--- | :--- | :--- |
-| **Digitální vstupy (DI)** | 23 | `...` | `...` | `... %` |
-| **Analogové vstupy (AI: 4–20mA, PT)**| 7 | `...` | `...` | `... %` |
-| **Tranzistorové výstupy (DO tranzistor + PWM)** | 6 (4 PWM + 2 DO)| `...` | `...` | `... %` |
-| **Reléové výstupy (DO relé 230 V)**| 3 | `...` | `...` | `... %` |
+| **Digitální vstupy (DI)** | 23 | `31 (7 na CP-2007 + 2× 12 na IB-1301)` | `8 (31 − 23)` | `34,8 % (8 / 23 × 100) %` |
+| **Analogové vstupy (AI: 4–20mA, PT)**| 7 | `7 (nakonfigurováno ze 14 univerzálních vstupů na CP-2007; zbylých 7 vstupů slouží jako DI)` | `0 (v rámci zvolené konfigurace vstupů CP-2007; hardwarově má CP-2007 14 univerzálních vstupů)` | `0 % (při přiřazení 7 AI + 7 DI; lze přepnout další univerzální vstupy na AI na úkor DI)` |
+| **Tranzistorové výstupy (DO tranzistor + PWM)** | 6 (4 PWM + 2 DO)| `14 (2× DO na CP-2007 + 12× DO 24 V DC na OS-1401)` | `8 (14 − 6)` | `133,3 % (8 / 6 × 100; celková kapacita je 233,3 % požadavku)` |
+| **Reléové výstupy (DO relé 230 V)**| 3 | `11 (integrovaná relé na CP-2007)` | `8 (11 − 3)` | `266,7 % (8 / 3 × 100; celková kapacita je 366,7 % požadavku)` |
 
 3. **Proudová bilance a dimenzování napájecího zdroje 24 V DC:**
    - Vypočtěte proudovou spotřebu sestavy na hladině 24 V DC:
-     - Vlastní příkon CPU a rozšiřujících modulů (dle datasheetů Teco): `...` W / 24 V = `...` A
-     - Odběr napájených snímačů DI (23 snímačů × cca 10 mA): `...` A
-     - Odběr zátěží na tranzistorových výstupech se soudobostí $k_s = 0{,}7$: `...` A
-     - **Celkový špičkový proud:** `...` A
+     - Vlastní příkon CPU a rozšiřujících modulů (dle datasheetů Teco): `15 W` W / 24 V = `0.63` A
+     - Odběr napájených snímačů DI (23 snímačů × cca 10 mA): `0.23` A
+     - Odběr zátěží na tranzistorových výstupech se soudobostí $k_s = 0{,}7$: `1.12` A
+     - **Celkový špičkový proud:** `1.98` A
      - Jaký napájecí zdroj 24 V DC z nabídky Teco / Mean Well zvolíte (včetně doporučené rezervy 25 %)?
-       - *Zvolený zdroj a jmenovitý proud:* `...`
-    - Navrhněte alternativu tohoto zdroje od jiného výrobce: `...`
+       - *Zvolený zdroj a jmenovitý proud:* `Požadovaný výkon / proud se započtením 25% rezervy: $2{,}0\text{ A} \times 1{,}25 = \mathbf{2{,}5\text{ A}}$ (cca 60 W při 24 V DC).Zvolený zdroj a jmenovitý proud: Teco PS2-60/27 (jmenovitý výstup 27,2 V DC / 2,2 A, výkon 60 W) – případně pro ještě větší proudovou rezervu nad 2,5 A zdroj Mean Well HDR-60-24 (24 V DC / 2,5 A, 60 W) nebo Mean Well SDR-75-24 (24 V DC / 3,2 A, 76,8 W). `
+    - Navrhněte alternativu tohoto zdroje od jiného výrobce: `Alternativa zdroje od jiného výrobce: Mean Well HDR-60-24 (24 V DC / 2,5 A, 60 W, na DIN lištu) nebo Siemens SITOP PSU100C 24 V / 2,5 A (6EP1332-1SH71).`
 
 > **Kritéria hodnocení úlohy 3 (bodování na známky):**
 > - :bangbang: **Správnost technického výběru a kompatibilita systému Teco (40 %):** Všechny zvolené moduly existují v portfoliu Teco a.s., jsou vzájemně kompatibilní (sběrnice TCL2/CIB) a plně pokrývají zadané signály včetně specifických požadavků (odporové měření PT100/Pt1000, 4–20 mA a rychlé výstupy PWM).
@@ -231,7 +231,9 @@ Jste v roli projektanta automatizačních systémů. Zákazník požaduje navrhn
 Jaký je princip zapojení odporového snímače teploty (např. Pt1000) a proč je pro přesné měření na velké vzdálenosti vhodnější použít snímač Pt1000 než Pt100, pokud máme k dispozici pouze standardní 2vodičové vedení?
 
 *Vaše odpověď:*
-`...`
+`Odporový snímač teploty (např. Pt1000) využívá závislosti elektrického odporu platinového elementu na teplotě (při 0 °C má odpor $1000\ \Omega$, s rostoucí teplotou odpor roste).   
+Při dvouvodičovém zapojení se k odporu samotného čidla sčítá i odpor obou přívodních vodičů vedení ($R_{\text{měř}} = R_{\text{čidla}} + 2 \cdot R_{\text{vodiče}}$), což způsobuje chybu měření (vypadá to jako vyšší teplota).
+Pt1000 je na delší vedení mnohem vhodnější než Pt100, protože má 10× vyšší základní odpor ($1000\ \Omega$ oproti $100\ \Omega$). Stejný odpor vedení (např. $2\ \Omega$ na celé smyčce) představuje u Pt1000 jen 0,2 % odporu čidla (chyba cca $0{,}5\ ^\circ\text{C}$), zatímco u Pt100 by to bylo 2 % (chyba cca $5\ ^\circ\text{C}$), a navíc lze u Pt1000 použít menší měřicí proud, což snižuje vlastní ohřev čidla.`
 
 ---
 
