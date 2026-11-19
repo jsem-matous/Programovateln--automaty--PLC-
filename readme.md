@@ -85,14 +85,14 @@ Prostudujte vnitřní blokové uspořádání programovatelného automatu na ní
 1. **Vnitřní uspořádání a paměťové oblasti PLC:**
    - Podle výše uvedeného blokového schématu a technické dokumentace PLC Teco doplňte funkci jednotlivých paměťových bloků v procesorové jednotce:
      - **Flash paměť (uživatelský program):** 
-       - Je volatilní (energeticky závislá)? `[Ano / Ne]`
-       - Co přesně se do ní nahrává z prostředí Mosaic: `...`
+       - Je volatilní (energeticky závislá)? `[Ne] (je energeticky nezávislá / nevolatilní – data zůstávají i po vypnutí napájení)`
+       - Co přesně se do ní nahrává z prostředí Mosaic: `Zkompilovaný uživatelský řídicí program (strojový kód), hardwarová konfigurace systému, případně i zdrojový projekt (pokud je zvoleno jeho uložení do PLC) a soubory webového serveru.`
      - **Datová paměť RAM:** 
-       - Je volatilní? `[Ano / Ne]`
-       - K čemu slouží během cyklu PLC: `...`
+       - Je volatilní? `[Ano] (je energeticky závislá – bez napájení se její obsah vymaže)`
+       - K čemu slouží během cyklu PLC: `Slouží k ukládání procesního obrazu vstupů a výstupů (PII/PIQ), aktuálních hodnot pracovních proměnných, mezivýpočtů, stavů časovačů/čítačů a systémového zásobníku při běhu programu.`
      - **Remanentní paměť (Retain / zálohovaná RAM):** 
-       - Jakým způsobem je zálohována při výpadku napájení v modulech Tecomat Foxtrot (akumulátor / superkondenzátor / paměť FRAM): `...`
-       - Uveďte typický příklad proměnné, která musí být uložena v remanentní paměti: `...`
+       - Jakým způsobem je zálohována při výpadku napájení v modulech Tecomat Foxtrot (akumulátor / superkondenzátor / paměť FRAM): `U řady Tecomat Foxtrot se používá energeticky nezávislá paměť MRAM / FRAM (případně u starších/specifických jednotek zálohování baterií/akumulátorem či superkondenzátorem), která nevyžaduje trvalé napájení pro uchování dat.`
+       - Uveďte typický příklad proměnné, která musí být uložena v remanentní paměti: `Počítadlo vyrobených kusů, počítadlo provozních hodin (motohodiny), stav elektroměru/vodoměru nebo uživatelsky nastavené požadované hodnoty (setpointy – např. cílová teplota).`
 
 2. **Cyklický princip činnosti PLC a procesní obraz:**
 	
