@@ -101,26 +101,26 @@ Prostudujte vnitřní blokové uspořádání programovatelného automatu na ní
 	Obr. převzatý z: TECO A.S. *PROGRAMOVATELNÉ AUTOMATY TECOMAT FOXTROT 2*. Kolín: Teco a.s., 2026. Dostupné také z: https://wiki.tecomat.cz/
 	
    - Popište 3 základní fáze jednoho pracovního cyklu PLC (**Scan Cycle**):
-     - *Fáze 1 (Čtení vstupů):* `...` *(načtení stavu svorek do Procesního obrazu vstupů – PII)*
-     - *Fáze 2 (Vykonání programu):* `...` *(výpočet logických a matematických operací)*
-     - *Fáze 3 (Zápis výstupů):* `...` *(přenesení Procesního obrazu výstupů – PIQ na fyzické svorky)*
+     - *Fáze 1 (Čtení vstupů):* `Procesor sejme aktuální logické a analogové stavy ze všech fyzických vstupních svorek a uloží je jako neměnný snímek do paměťové oblasti Procesního obrazu vstupů (PII).` *(načtení stavu svorek do Procesního obrazu vstupů – PII)*
+     - *Fáze 2 (Vykonání programu):* `CPU vykonává uživatelský řídicí program od prvního řádku po poslední, provádí logické a matematické operace a zapisuje průběžné výsledky výstupů do Procesního obrazu výstupů (PIQ).` *(výpočet logických a matematických operací)*
+     - *Fáze 3 (Zápis výstupů):* `Po dokončení výpočtu celého programu se finální stavy z Procesního obrazu výstupů (PIQ) jednorázově přenesou na fyzické výstupní moduly (relé, tranzistory, analogové výstupy). (Následuje režijní fáze – komunikace, diagnostika a obsluha watchdogu.)` *(přenesení Procesního obrazu výstupů – PIQ na fyzické svorky)*
    - Proč procesor PLC nečte fyzické svorky průběžně během výpočtu programu na každém řádku kódu, ale pracuje výhradně s procesním obrazem?
-     - *Vysvětlení:* `...`
+     - *Vysvětlení:* `Zajišťuje se tím časová konzistence dat během jednoho cyklu – vstupní signál má stejnou hodnotu na začátku i na konci programu (nedojde k logickým rozporům, kdy by se stav čidla změnil uprostřed výpočtu). Zároveň je čtení a zápis do interní paměti RAM řádově rychlejší než neustálá komunikace po systémové sběrnici s jednotlivými I/O moduly.`
 
 3. **Napájení, signály a elektrická odolnost:**
    - Jaké je jmenovité napájecí napětí centrálních jednotek a rozšiřujících modulů systému Tecomat Foxtrot?
      - Označte správné možnosti: 
-	     `[ ] DC`
+	     `[X] DC`
 	     `[ ] AC`
 	     `[ ] 5 V`
 		 `[ ] 12 V`
-		 `[ ] 24 V`
+		 `[X] 24 V`
 		 `[ ] 48 V` 
 		 `[ ] 230 V`
    - Jaký je princip fungování a hlavní výhoda **galvanického oddělení** vstupních obvodů (pomocí optočlenů) u průmyslového PLC?
-     - *Odpověď:* `...`
+     - *Odpověď:* `Signál ze vstupní svorky rozsvítí LED diodu uvnitř optočlenu a světelný paprsek sepne fototranzistor na straně procesoru – mezi oběma obvody není žádné přímé vodivé propojení. Hlavní výhodou je ochrana citlivé logiky CPU před přepětím, napěťovými špičkami a elektromagnetickým rušením z průmyslového okolí a zamezení vzniku zemních smyček.`
    - Proč musí být paralelně k cívce stejnosměrného elektromagnetického ventilu nebo stykače spínaného polovodičovým tranzistorovým výstupem PLC zapojena ochranná zhášecí dioda (tzv. flyback dioda/freewheeling diode)?
-     - *Vysvětlení:* `...`
+     - *Vysvětlení:* `Cívka má velkou indukčnost a při jejím náhlém rozpojení tranzistorem v ní vzniká vysoké samoindukční přepětí opačné polarity ($u = -L \frac{di}{dt}$), které by mohlo polovodičový výstup PLC prorazit a zničit. Zhášecí dioda (zapojená v závěrném směru vůči napájení) umožní indukčnímu proudu bezpečně doznívat přes cívku a omezí špičkové napětí na úbytek na diodě (cca 0,7 V).`
 
 4. **Komunikační rozhraní a systémové sběrnice Teco:**
    - Doplňte do tabulky parametry sběrnic používaných u systému Tecomat Foxtrot (využijte [wiki.tecomat.cz](https://wiki.tecomat.cz/)):
@@ -128,8 +128,8 @@ Prostudujte vnitřní blokové uspořádání programovatelného automatu na ní
 | Název sběrnice                         | Typická fyzická vrstva / kabeláž                        | K čemu sběrnice slouží                                | Maximální dosah / zakončení (terminace)                      |
 | :------------------------------------- | :------------------------------------------------------ | :---------------------------------------------------- | :----------------------------------------------------------- |
 | **TCL2** *(Teco Communication Line 2)* | RS-485, stíněný kroucený pár (např. kabel SYKFY, PCEHY) | Připojení rychlých periferních modulů na DIN lištu    | Až stovek metrů; na obou koncích zakončovací odpor cca 120 Ω |
-| **CIB** *(Common Installation Bus)*    | `...`                                                   | `...`                                                 | `...`                                                        |
-| **Ethernet (ETH)**                     | 100Base-TX, konektor RJ45 (kabel UTP/STP Cat 5e/6)      | `...` *(programování Mosaic, Web server, Modbus TCP)* | Max. 100 m na segment                                        |
+| **CIB** *(Common Installation Bus)*    | `Dvouvodičová sběrnice, jeden nestíněný kroucený pár (např. J-Y(St)Y, UTP) s přenosem napájení i dat po stejných vodičích`                                                   | `Připojení periferních prvků inteligentní elektroinstalace a HVAC (tlačítka, čidla, akční členy, termostaty) ve volné topologii (strom, hvězda, linie)`                                                 | `Typicky až 500 m (na jednu větev bez opakovače); nevyžaduje zakončovací odpory (bez terminace)`                                                        |
+| **Ethernet (ETH)**                     | 100Base-TX, konektor RJ45 (kabel UTP/STP Cat 5e/6)      | `Programování a diagnostika z prostředí Mosaic, vestavěný Web server, komunikace s nadřazenými systémy SCADA/HMI a propojení PLC po síti (např. Modbus TCP, TCP/IP, HTTP, MQTT)` | Max. 100 m na segment                                        |
 
 > :key: **Vysvětlení pojmů a odborné zdroje:**
 > - **Procesní obraz (Process Image):** Paměťová oblast v RAM kontroléru, která uchovává snímek stavu všech fyzických vstupů pořízený na počátku cyklu a připravený stav výstupů pro zápis na konci cyklu. Zajišťuje časovou konzistenci dat během zpracování algoritmu.
@@ -149,7 +149,9 @@ Prostudujte vnitřní blokové uspořádání programovatelného automatu na ní
 V jakých jednotkách udává norma **ČSN EN 60529** odolnost proti vniknutí pevných těles a kapalin (kód IP) a jaké minimální krytí musí mít centrální jednotka PLC určená pro montáž na DIN lištu do rozváděče (např. Tecomat Foxtrot v provedení IP20) ve srovnání s decentralizovaným senzorem na venkovním potrubí? Ověřte i správnost označení normy.
 
 *Vaše odpověď:*
-`...`
+`Norma ČSN EN 60529 udává stupeň ochrany krytem pomocí bezrozměrného IP kódu (dvě číslice: 1. číslice 0–6 pro ochranu proti vniknutí pevných cizích těles a dotyku, 2. číslice 0–9K pro ochranu proti vniknutí vody).   
+PLC na DIN lištu (IP20): První číslice 2 znamená ochranu proti pevným tělesům $\ge 12{,}5\text{ mm}$ (ochrana proti dotyku prstem), druhá číslice 0 znamená žádnou ochranu proti vodě – proto musí být instalováno v uzavřeném elektrorozvaděči.   Decentralizovaný senzor na venkovním potrubí: Vyžaduje krytí minimálně IP65 / IP67 (případně IP68 / IP69K), kde 6 zaručuje úplnou prachotěsnost a 5/7 ochranu proti tryskající vodě, dešti či dočasnému ponoření.
+Ověření označení normy: Označení ČSN EN 60529 je v pořádku (vychází z mezinárodní normy IEC 60529 a platí v ČR včetně novějších změn/doplňků jako ČSN EN 60529/A2).`
 
 ---
 
