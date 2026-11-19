@@ -260,26 +260,27 @@ Jste v roli servisního inženýra na lince řízené automatem **Tecomat Foxtro
 | Signalizační prvek na PLC | Stav (barva / svit)     | Provozní význam (co stav znamená pro servisního technika)   |
 | :------------------------ | :---------------------- | :---------------------------------------------------------- |
 | **RUN**                   | Zelená, trvale svítí    | Uživatelský program v PLC běží v normálním cyklickém režimu |
-| **HALT / STOP**           | Žlutá / oranžová, svítí | `...`                                                       |
-| **ERR / FAULT**           | Červená, bliká          | `...`                                                       |
-| **ERR / FAULT**           | Červená, trvale svítí   | `...`                                                       |
-| **ETH (Link/Act)**        | Zelená/žlutá, bliká     | `...`                                                       |
+| **HALT / STOP**           | Žlutá / oranžová, svítí | `PLC je zastaveno (režim STOP/HALT) – uživatelský program se nevykonává (např. po chybě, překročení cyklu/watchdogu nebo ručním zastavení), výstupy jsou v bezpečném/neaktivním stavu.`                                                       |
+| **ERR / FAULT**           | Červená, bliká          | `Varování / nekritická nebo přechodná systémová chyba (např. komunikační výpadek, porucha/odpojení periferie nebo diagnostické hlášení), případně stav vyžadující kontrolu v diagnostickém logu.`                                                       |
+| **ERR / FAULT**           | Červená, trvale svítí   | `Závažná / kritická chyba PLC nebo hardwaru (např. chyba programu/watchdodu, hardwarová závada, chybějící/poškozená konfigurace), která znemožňuje standardní provoz.`                                                       |
+| **ETH (Link/Act)**        | Zelená/žlutá, bliká     | `Aktivní ethernetové spojení (link) a probíhající síťová komunikace/přenos dat (activity – např. s Mosaicem, webovým serverem, SCADA nebo po Modbus TCP).`                                                       |
 
 2. **Troubleshooting v elektrickém zapojení pomocí digitálního multimetru:**
    - Upevněte na DIN lištu PLC a podle parametrů (viz technický list) vyberte vhodný zdroj napájení.
    - Zapojte napájení PLC (než zapojíte 230 V AC zapojení proměřte).
    - Popište přesný a bezpečný metodický postup (kam připojíte měřicí hroty, jaký rozsah a veličinu na multimetru nastavíte; alespoň některé varianty bezpečně nasimulovat na PLC a zdroji, nejspíš budete potřebovat navázat komunikaci s programovacím prostředím, založit program a HW konfiguraci, abyste mohli ovládat výstupy a číst vstupy):
      - **A. Detekce tvrdého zkratu mezi svorkami +24 V DC a 0 V (GND) před zapnutím jističe:**
-       - *Postup:* `...` *(pozor: zařízení musí být zcela bez napětí, měření impedance/kontinuity)*
+       - *Postup:* `Zařízení musí být zcela bez napětí (odpojený napájecí zdroj / vypnuté jističe a odpojené zátěže/větve, aby nedošlo k chybnému vyhodnocení nebo poškození měřicího přístroje). Na multimetru nastav měření odporu ($\Omega$) nebo kontinuity/prozvonění (černý hrot do COM, červený do $\text{V}/\Omega$). Přilož hroty na svorky +24 V DC a 0 V (GND) – blízkost 0 $\Omega$ (pípnutí kontinuity) signalizuje tvrdý zkrat, který je nutné před zapnutím napájení odstranit.` *(pozor: zařízení musí být zcela bez napětí, měření impedance/kontinuity)*
      - **B. Ověření spečených kontaktů výstupního relé DO při vypnutém napájení řízení:**
-       - *Postup:* `...`
+       - *Postup:* `Vypni napájení řídicího obvodu i spínaného silového/výstupního obvodu (zařízení bez napětí). Na multimetru nastav kontinuitu nebo odpor ($\Omega$) a připoj hroty na svorky spínacího kontaktu daného výstupního relé DO (případně na odpojené svorky zátěže). Pokud multimetr ukazuje vodivost / nízký odpor (cca $0\ \Omega$) i v klidovém/rozepnutém stavu relé (kdy výstup není sepnut), kontakty jsou spečené (trvale spojené elektrickým obloukem / přetížením). `
      - **C. Diagnostika napájecího zdroje a napájení PLC (ověření správného napětí 24 V DC):**
-	   - *Postup:* `...` *(zařízení pod napětím, měření stejnosměrného napětí – hroty na svorkách zdroje / PLC napájení +24 V a 0 V, vhodný rozsah DC napětí, kontrola ripple/stability)*
+	   - *Postup:* `Při zapnutém napájení nastav na multimetru měření stejnosměrného napětí (DC V) (vhodný rozsah nad 24 V, např. 60 V / 200 V DC nebo AUTO; červený hrot do V, černý do COM). Přilož černý hrot na 0 V (GND) a červený hrot na svorku +24 V DC na výstupu zdroje i na napájecích svorkách PLC/modulů. Ověř jmenovitou hodnotu (typicky cca 24 V DC, příp. u zdrojů řady PS2 kolem 27 V DC dle typu) a zkontroluj stabilitu/kolísání napětí při zátěži (případně AC složku/ripple na AC rozsahu).` *(zařízení pod napětím, měření stejnosměrného napětí – hroty na svorkách zdroje / PLC napájení +24 V a 0 V, vhodný rozsah DC napětí, kontrola ripple/stability)*
 	- **D. Diagnostika vstupů a výstupů PLC (ověření napětí / kontinuity na DI/DO):**
-       - *Postup:* `...` *(podle typu – měření napětí na aktivovaném vstupu/výstupu nebo kontinuity/impedance při vypnutém napájení, hroty na příslušných svorkách I/O a referenční GND)*
+       - *Postup:* `Aktivní vstupy (DI) / výstupy (DO) pod napětím: Nastav DC V (rozsah např. 200 V DC / AUTO), černý hrot připoj na referenční 0 V (GND) (nebo COM společné svorky) a červený hrot na příslušnou signálovou/výstupní svorku DI/DO. Porovnej naměřené napětí (log. 1 ≈ napájecí úroveň, log. 0 ≈ 0 V) se stavem LED na modulu a s hodnotou v programu/procesním obraze.
+       - Kontinuita / impedance při vypnutém napájení: Odpoj napájení obvodu, nastav odpor ($\Omega$) / kontinuitu a měř mezi příslušnou svorkou a referenčním bodem/vodičem (např. ověření celistvosti vedení, spínače nebo zátěže bez parazitního napětí).` *(podle typu – měření napětí na aktivovaném vstupu/výstupu nebo kontinuity/impedance při vypnutém napájení, hroty na příslušných svorkách I/O a referenční GND)*
     - **E. Měření napětí 230 V AC pomocí DC rozsahu (!!! Tento úkol provádějte pouze s vyučujícím !!!):**
-	   - *Postup:* `...` *(zařízení pod napětím, multimetr nastaven na rozsah **1000 V DC**, hroty bezpečně připojeny na fázový a nulový vodič / L–N. Multimetr měří střední hodnotu, proto ukáže přibližně **0 V**.)*
-	   - *Jaké riziko z toho vyplývá při následné práci na zařízení:* `...`
+	   - *Postup:* `Zařízení je pod napětím (pouze pod přímým dohledem vyučujícího a s odpovídajícími OOPP/nářadím). Na multimetru nastav rozsah 1000 V DC a připoj hroty na fázový (L) a nulový (N) vodič sítě 230 V AC. Protože symetrické střídavé napětí má střední hodnotu za periodu nulovou, multimetr na DC rozsahu ukáže hodnotu blízkou 0 V` *(zařízení pod napětím, multimetr nastaven na rozsah **1000 V DC**, hroty bezpečně připojeny na fázový a nulový vodič / L–N. Multimetr měří střední hodnotu, proto ukáže přibližně **0 V**.)*
+	   - *Jaké riziko z toho vyplývá při následné práci na zařízení:* `Technik se může mylně domnívat, že obvod je bez napětí (0 V), a sáhnout na živé části pod nebezpečným napětím 230 V AC – hrozí těžký úraz elektrickým proudem. Vždy je nutné před měřením správně nastavit AC V a ověřit funkci multimetru na známém zdroji.`
 
 3. **Diagnostika v programovacím prostředí Teco Mosaic:**
    - K jakému diagnostickému účelu slouží níže uvedené nástroje prostředí Mosaic a jaká jsou jejich bezpečnostní rizika:
